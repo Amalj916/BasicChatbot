@@ -2,8 +2,6 @@ from typing import List, Dict
 from langgraph.graph import StateGraph, START, END
 from langchain_ollama.llms import OllamaLLM
 import logging
-import tkinter as tk
-from chatbot_interface import ChatbotGUI
 
 # Set up logging
 logging.basicConfig(level=logging.INFO)
@@ -55,24 +53,30 @@ class ChatbotEngine:
             logger.error(f"Error in chatbot: {str(e)}")
             raise
 
-    def stream_graph_updates(self, usr_input: str):
+    def get_response(self, user_input: str):
         try:
             # initialize the state with user's input
-            state = {"messages": [{"role": "user", "content": usr_input}]}
-            for event in self.graph.stream(state):
-                for value in event.values():
-                    yield value["messages"][-1]["content"]
+            state = {"messages": [{"role": "user", "content": user_input}]}
+            result = self.graph.invoke(state)
+            return result["messages"][-1]["content"]
         except Exception as e:
-            logger.error(f"Error in stream_graph_updates: {str(e)}")
+            logger.error(f"Error getting response: {str(e)}")
             raise
 
 
 def main():
     try:
-        root = tk.Tk()
-        chatbot_engine = ChatbotEngine()
-        app = ChatbotGUI(root, chatbot_engine)
-        root.mainloop()
+        chatbot = ChatbotEngine()
+        print("Chatbot initialized. Type 'quit' to exit.")
+
+        while True:
+            user_input = input("\nYou: ")
+            if user_input.lower() == "quit":
+                break
+
+            response = chatbot.get_response(user_input)
+            print(f"\nBot: {response}")
+
     except Exception as e:
         logger.error(f"Application error: {str(e)}")
         raise

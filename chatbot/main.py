@@ -67,11 +67,11 @@ class ChatbotEngine:
 def main():
     try:
         chatbot = ChatbotEngine()
-        print("Chatbot initialized. Type 'quit' to exit.")
+        print("Chatbot initialized. Type 'quit','q','exit' to exit.")
 
         while True:
             user_input = input("\nYou: ")
-            if user_input.lower() == "quit":
+            if user_input.lower() in ["quit", "q", "exit"]:
                 break
 
             response = chatbot.get_response(user_input)
